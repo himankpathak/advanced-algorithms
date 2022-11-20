@@ -1,11 +1,18 @@
+def addToSet(c_set, el):
+    c_set2 = c_set.copy()
+    c_set.add(el)
+    return c_set2
+
+
 def check_mwis(memo, graph, weights, i, curr_weight, curr_set, dropped_set):
     # print("ICALL", i)
     # print("curr_set", curr_set)
     # print("dropped_set", dropped_set)
 
-    key = str(sorted(curr_set))
+    # key = str(sorted(curr_set))
+    key = i
     if key in memo:
-        print("returing memo for i:", i)
+        # print("returing memo for i:", i)
         return memo[key]["w"], memo[key]["s"]
 
     if i >= len(weights):
@@ -14,6 +21,54 @@ def check_mwis(memo, graph, weights, i, curr_weight, curr_set, dropped_set):
     w1 = 0
     s1 = set()
     if i not in dropped_set:
+
+        neighbours = graph[i]
+        n_len = len(neighbours)
+        if n_len == 0:
+            curr_set1 = curr_set.copy()
+            curr_set1.add(i)
+
+            max_w = curr_weight + weights[i]
+            max_set = addToSet(curr_set, i)
+            memo[i] = {"w": max_w, "s": max_set}
+
+            return max_w, max_set
+
+        elif n_len == 1:
+            n = neighbours[0]
+            if len(graph[n]) == 1:
+                if weights[i] >= weights[n]:
+
+                    max_w = curr_weight + weights[i]
+                    max_set = addToSet(curr_set, i)
+                    memo[i] = {"w": max_w, "s": max_set}
+                    memo[n] = {"w": max_w, "s": max_set}
+
+                    return max_w, max_set
+                else:
+                    max_w = curr_weight + weights[n]
+                    max_set = addToSet(curr_set, n)
+                    memo[i] = {"w": max_w, "s": max_set}
+                    memo[n] = {"w": max_w, "s": max_set}
+
+                    return max_w, max_set
+
+            else:
+
+                w, s = check_mwis(
+                    memo,
+                    graph,
+                    weights,
+                    n,
+                    curr_weight,
+                    curr_set,
+                    addToSet(dropped_set, i),
+                )
+                if n not in s:
+                    return curr_weight + weights[i], addToSet(curr_set, i)
+                else:
+                    return w, s
+
         # node is part of set
         curr_set1 = curr_set.copy()
         curr_set1.add(i)
@@ -46,6 +101,7 @@ def check_mwis(memo, graph, weights, i, curr_weight, curr_set, dropped_set):
     # print("s1", s1)
     # print("w2", w2)
     # print("s2", s2)
+
     # print()
 
     if w1 >= w2:
@@ -57,7 +113,7 @@ def check_mwis(memo, graph, weights, i, curr_weight, curr_set, dropped_set):
         max_set = s2
         curr_set_key = curr_set
 
-    memo[str(sorted(curr_set_key))] = {"w": max_w, "s": max_set}
+    # memo[str(sorted(curr_set_key))] = {"w": max_w, "s": max_set}
 
     return max_w, max_set
 
@@ -70,6 +126,19 @@ def mwis():
         {2, 3},
         {0, 1},
         {0, 1},
+    ]
+    graph1 = [
+        {0, 3},
+        {1, 9},
+        {2, 6, 7, 8},
+        {3, 0, 4},
+        {4, 3, 5},
+        {5, 4, 6, 7},
+        {6, 2, 5},
+        {7, 2, 5},
+        {8, 2, 10},
+        {9, 1, 10},
+        {10, 8, 9},
     ]
     graph = [
         {0, 3, 4, 8, 11, 12},
@@ -103,7 +172,7 @@ def mwis():
         {28, 5, 6},
         {29, 5, 6},
     ]
-    graph2 = [
+    graph1 = [
         {0, 3, 6, 32, 33, 34, 35},
         {1, 2},
         {2, 1, 3, 4},
@@ -147,6 +216,19 @@ def mwis():
         766,
         993,
     ]
+    weights1 = [
+        898,
+        803,
+        766,
+        993,
+        2,
+        522,
+        221,
+        381,
+        730,
+        970,
+        185,
+    ]
     weights = [
         898,
         803,
@@ -179,7 +261,7 @@ def mwis():
         37,
         902,
     ]
-    weights2 = [
+    weights1 = [
         898,
         803,
         766,
