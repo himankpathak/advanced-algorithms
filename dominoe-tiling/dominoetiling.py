@@ -108,9 +108,11 @@ def solve(floor, mat, usedTiles, tiles):
         usedTiles_up = deepcopy(usedTiles)
         curr_char = getChar()
 
+        # Place the tile
         mat_up[pos["pos_1"][0]][pos["pos_1"][1]] = curr_char
         mat_up[pos["pos_2"][0]][pos["pos_2"][1]] = curr_char
 
+        # Add placed tile to a used bag to prevent reusing
         usedTiles_up.add(pos["tile"])
         usedTiles_up.add(pos["tile"][::-1])
 
@@ -125,7 +127,6 @@ def solve(floor, mat, usedTiles, tiles):
 def tileTheFloor(floor, mat, usedTiles):
 
     can_solve = True
-
     min_len = math.inf
     solveij = []
     for i in range(len(floor)):
@@ -143,9 +144,6 @@ def tileTheFloor(floor, mat, usedTiles):
 
         if min_len == 1:
             break
-
-    # print(min_len, len(usedTiles))
-    # print(sorted(list(usedTiles)))
 
     if min_len == math.inf:
         if len(usedTiles) != 49:
@@ -169,7 +167,7 @@ def dominoetiling():
             inp.append(l)
 
     ans = deepcopy(inp)
-    # fix dimension of input matrix
+
     for i in range(len(inp)):
         for j in range(len(inp[i])):
             if inp[i][j] == " ":
@@ -186,6 +184,7 @@ def dominoetiling():
     printMatrix(inp)
     # printMatrix(ans)
 
+    # Recursively tile the floor to solve input
     a, floor = tileTheFloor(inp, ans, set())
     print("\nSolvable:", a)
     print("\nSolution:")
@@ -193,6 +192,7 @@ def dominoetiling():
 
     n = 65
     d = {}
+    # Generate output.txt file
     with open(file_name.split(".")[0] + ".answer.txt", "w+") as data:
         for i in floor:
             for j in i:
